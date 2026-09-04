@@ -17,10 +17,14 @@ class Olist:
     def get_data(self):
         """
         This function returns a Python dict.
-        Its keys should be 'sellers', 'orders', 'order_items' etc...
-        Its values should be pandas.DataFrames loaded from csv files
         """
-        pass  # YOUR CODE HERE
+        csv_path = Path("~/.workintech/olist/data/csv").expanduser()
+        file_paths = list(csv_path.glob("*.csv"))
+        key_names = [file_path.name.replace(".csv", "").replace("olist_", "").replace("_dataset", "") for file_path in file_paths]
+        data = {}
+        for (key, path) in zip(key_names, file_paths):             # hangi iki liste?
+            data[key] = pd.read_csv(path)
+        return data
 
     def ping(self):
         """
