@@ -60,21 +60,31 @@ class Order:
         Returns a DataFrame with:
         order_id, number_of_items
         """
-        pass  # YOUR CODE HERE
+        items = self.data['order_items'].copy()
+        return items.groupby('order_id', as_index=False).agg(
+            number_of_items=('order_item_id', 'count')
+        )
 
     def get_number_sellers(self):
         """
         Returns a DataFrame with:
         order_id, number_of_sellers
         """
-        pass  # YOUR CODE HERE
+        items = self.data['order_items'].copy()
+        return items.groupby('order_id', as_index=False).agg(
+            number_of_sellers=('seller_id', 'nunique')
+        )
 
     def get_price_and_freight(self):
         """
         Returns a DataFrame with:
         order_id, price, freight_value
         """
-        pass  # YOUR CODE HERE
+        items = self.data['order_items'].copy()
+        return items.groupby('order_id', as_index=False).agg(
+            price=('price', 'sum'),
+            freight_value=('freight_value', 'sum')
+        )
 
     # Optional
     def get_distance_seller_customer(self):
@@ -95,4 +105,12 @@ class Order:
         'distance_seller_customer']
         """
         # Hint: make sure to re-use your instance methods defined above
-        pass  # YOUR CODE HERE
+        training_set = (
+            self.get_wait_time(is_delivered)
+            .merge(self.get_review_score(), on='order_id')
+            .merge(self.get_number_items(), on='order_id')
+            .merge(self.get_number_sellers(), on='order_id')
+            .merge(self.get_price_and_freight(), on='order_id')
+        )
+
+        return training_set.dropna()
