@@ -48,12 +48,16 @@ class Order:
     def get_review_score(self):
         """
         Returns a DataFrame with:
-        order_id, dim_is_five_star, dim_is_one_star, review_score
+        order_id, dim_is_five_star, dim_is_one_star, review_score, cost_of_review
         """
         reviews = self.data['order_reviews'].copy()
         reviews['dim_is_five_star'] = reviews['review_score'].map(lambda x: 1 if x == 5 else 0)
         reviews['dim_is_one_star'] = reviews['review_score'].map(lambda x: 1 if x == 1 else 0)
-        return reviews[['order_id', 'dim_is_five_star', 'dim_is_one_star', 'review_score']]
+        reviews['cost_of_review'] = reviews['review_score'].map({
+            1: 100, 2: 50, 3: 40, 4: 0, 5: 0
+        })
+        return reviews[['order_id', 'dim_is_five_star', 'dim_is_one_star',
+                        'review_score', 'cost_of_review']]
 
     def get_number_items(self):
         """

@@ -152,11 +152,12 @@ class Seller:
         df = df.groupby('seller_id', as_index=False).agg({
             'dim_is_one_star': 'mean',
             'dim_is_five_star': 'mean',
-            'review_score': 'mean'
+            'review_score': 'mean',
+            'cost_of_review': 'sum'
         })
 
         df.columns = ['seller_id', 'share_of_one_stars',
-                      'share_of_five_stars', 'review_score']
+                      'share_of_five_stars', 'review_score', 'cost_of_reviews']
 
         return df
 
@@ -184,5 +185,10 @@ class Seller:
         if self.get_review_score() is not None:
             training_set = training_set.merge(self.get_review_score(),
                                               on='seller_id')
+        training_set['revenues'] = (
+            80 * training_set['months_on_olist']
+            + 0.10 * training_set['sales']
+        )
+        training_set['profits'] = training_set['revenues'] - training_set['cost_of_reviews']
 
         return training_set
